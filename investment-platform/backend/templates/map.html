@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>學習地圖</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      background: linear-gradient(135deg, #DBEAFE, #E0E7FF);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    h1 {
+      color: #1E3A8A;
+      margin: 30px 0 10px;
+    }
+    .subtitle {
+      color: #475569;
+      margin-bottom: 30px;
+    }
+    .map {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 20px;
+    }
+    .category {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      width: 220px;
+    }
+    .category:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .category h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #2563EB;
+    }
+    .topic {
+      background: #E0F2FE;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .topic:hover {
+      background: #3B82F6;
+      color: white;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>🗺️ 投資學習地圖</h1>
+  <p class="subtitle">選擇一個主題開始學習</p>
+
+  <div class="map">
+    <!-- 股票 -->
+    <div class="category">
+      <h2>📈 股票</h2>
+      <div class="topic"><a href="{{ url_for('topic', topic_id=1) }}">金融市場全貌</a></div>
+      <div class="topic"><a href="{{ url_for('topic', topic_id=2) }}">股票基礎入門</a></div>
+      <div class="topic"><a href="{{ url_for('topic', topic_id=3) }}">股票分析與策略</a></div>
+    </div>
+
+    <!-- 債券 -->
+    <div class="category">
+      <h2>💵 債券</h2>
+      <div class="topic"><a href="{{ url_for('topic', topic_id=4) }}">債券基礎入門</a></div>
+      <div class="topic"><a href="{{ url_for('topic', topic_id=5) }}">債券風險與評級</a></div>
+      <div class="topic"><a href="{{ url_for('topic', topic_id=6) }}">ETF 入門</a></div>
+    </div>
+
+    <!-- 股債配置 -->
+    <div class="category">
+      <h2>⚖️ 股債配置</h2>
+      <div class="topic"><a href="{{ url_for('topic', topic_id=7) }}">資產配置基礎</a></div>
+      <div class="topic"><a href="{{ url_for('topic', topic_id=8) }}">動態資產配置與市場變化</a></div>
+      <div class="topic"><a href="{{ url_for('topic', topic_id=9) }}">期末成果驗收</a></div>
+    </div>
+  </div>
+
+  <a href="{{ url_for('home') }}" class="btn">返回主頁面</a>
+</body>
+</html>

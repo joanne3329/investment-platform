@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ title }} - 投資學習平台</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .card {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      max-width: 700px;
+      margin: 60px auto;
+      text-align: center;
+    }
+    .card h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #1E3A8A;
+    }
+    .card p {
+      font-size: 16px;
+      color: #374151;
+      margin-bottom: 30px;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+  </style>
+</head>
+<body style="background: linear-gradient(135deg, #E0F2FE, #EDE9FE);">
+
+  <div class="card">
+    <h1>📖 {{ title }}</h1>
+    <p>
+      這裡是主題 <strong>{{ title }}</strong> 的學習內容。<br>
+      你可以在這裡放課程簡介、教材連結，或下一步的練習。
+    </p>
+
+    <div class="btn-group">
+      <a href="{{ url_for('map') }}" class="btn">返回學習地圖</a>
+      <a href="{{ url_for('home') }}" class="btn">回到主頁面</a>
+    </div>
+  </div>
+
+</body>
+</html>

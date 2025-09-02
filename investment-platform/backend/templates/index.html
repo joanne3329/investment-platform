@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>投資學習平台</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #E0F2FE, #EDE9FE);
+      color: #1E293B;
+      text-align: center;
+    }
+    .container {
+      background: white;
+      padding: 40px 60px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      max-width: 480px;
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 12px;
+      color: #3B82F6;
+    }
+    p {
+      font-size: 16px;
+      margin-bottom: 28px;
+      color: #475569;
+    }
+    .btn {
+      display: inline-block;
+      padding: 14px 30px;
+      font-size: 18px;
+      background: #3B82F6;
+      color: white;
+      font-weight: bold;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      background: #2563EB;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+    .icon {
+      font-size: 50px;
+      margin-bottom: 16px;
+      color: #10B981;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📈</div>
+    <h1>歡迎來到投資學習平台</h1>
+    <p>從基礎到進階，開啟你的投資之旅</p>
+    <a href="{{ url_for('home') }}" class="btn">進入主頁面</a>
+  </div>
+</body>
+</html>

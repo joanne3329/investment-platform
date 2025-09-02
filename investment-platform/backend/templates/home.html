@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>投資學習平台</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #E0F2FE, #EDE9FE);
+      color: #1E293B;
+      text-align: center;
+    }
+    .hero {
+      padding: 60px 20px;
+    }
+    .hero h1 {
+      font-size: 40px;
+      color: #2563EB;
+      margin-bottom: 20px;
+    }
+    .hero p {
+      font-size: 18px;
+      color: #475569;
+      max-width: 700px;
+      margin: 0 auto 40px;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      padding: 40px 60px;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+    .card h2 {
+      font-size: 22px;
+      color: #3B82F6;
+      margin: 15px 0;
+    }
+    .card p {
+      font-size: 15px;
+      color: #475569;
+      margin-bottom: 20px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #3B82F6;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    .btn:hover {
+      background: #2563EB;
+    }
+    footer {
+      margin-top: 50px;
+      padding: 20px;
+      font-size: 14px;
+      background: #F1F5F9;
+      color: #64748B;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>📊 投資學習平台</h1>
+    <p>本平台的初衷是結合學習與實作，幫助使用者從基礎到進階，理解股票、債券與資產配置，並透過模擬與互動強化學習體驗。</p>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="card">
+      <h2>🗺️ 學習地圖</h2>
+      <p>從股票、債券到資產配置的完整學習路徑，逐步建立你的金融知識。</p>
+      <a href="{{ url_for('map') }}" class="btn">進入地圖</a>
+    </div>
+    <div class="card">
+      <h2>📈 投資模擬工具</h2>
+      <p>模擬真實市場情境，讓你在無風險環境下學會投資決策。</p>
+      <a href="#" class="btn">開始模擬</a>
+    </div>
+    <div class="card">
+      <h2>🔗 延伸學習</h2>
+      <p>連結到外部資源與課程，拓展更多金融與投資知識。</p>
+      <a href="#" class="btn">查看資源</a>
+    </div>
+    <div class="card">
+      <h2>🚀 未來功能</h2>
+      <p>更多互動課程與專案即將推出，敬請期待！</p>
+      <a href="#" class="btn">Coming Soon</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 投資學習平台 | 學習 × 模擬 × 成長
+  </footer>
+
+</body>
+</html>

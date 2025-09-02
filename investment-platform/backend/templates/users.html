@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>使用者清單</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 80%;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px 20px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background: #1E3A8A;
+      color: white;
+    }
+    tr:hover {
+      background: #E0F2FE;
+    }
+  </style>
+</head>
+<body>
+  <h1>👥 使用者清單</h1>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>帳號</th>
+      <th>Email</th>
+    </tr>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.id }}</td>
+      <td>{{ u.username }}</td>
+      <td>{{ u.email }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <a href="{{ url_for('home') }}" class="btn">返回主頁</a>
+</body>
+</html>

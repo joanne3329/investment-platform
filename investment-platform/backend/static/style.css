@@ -1,0 +1,66 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #F9FAFB;
+  color: #111827;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2 {
+  color: #1E3A8A;
+  margin-bottom: 20px;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: #1E3A8A;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+.btn:hover {
+  background: #FBBF24;
+  color: #111827;
+  transform: scale(1.05);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 40px;
+}
+
+.topic {
+  border-radius: 16px;
+  padding: 30px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 主題配色 */
+.topic.stock { background: #2563EB; }    /* 股票 → 藍 */
+.topic.bond { background: #059669; }     /* 債券 → 綠 */
+.topic.etf { background: #7C3AED; }      /* ETF → 紫 */
+.topic.asset { background: #F59E0B; }    /* 資產配置 → 金 */
+
+.topic:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
