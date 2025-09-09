@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">🌊 投資冒險之旅</h2>
+  <p class="text-muted text-center">一路闖關，共 10 題，最後揭曉你是哪種冒險角色與投資風格！</p>
+
+  <!-- 進度條 + 恐龍 -->
+  <div class="progress-wrapper" style="position: relative; max-width: 600px; margin: auto;">
+    <div id="dino-wrapper" style="position: absolute; top: 50%; left: 0; transform: translateY(-50%); display: flex; align-items: center; font-size: 2rem;">
+      <span id="dino" class="jump">🦕</span>
+      <span id="progress-text" style="font-size: 0.9rem; margin-left: 6px;">0%</span>
+    </div>
+    <div class="progress mb-4" style="height: 20px;">
+      <div id="progress-bar"
+           class="progress-bar progress-bar-striped progress-bar-animated"
+           role="progressbar" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <!-- 題目卡片（只有在沒有結果時才顯示） -->
+  {% if result is not defined or not result %}
+  <div id="quiz-container" class="d-flex justify-content-center">
+    {% for q in range(1,11) %}
+    <div class="card question-card p-4 mb-5 animate__animated" style="display:none;">
+      <div class="card-body text-center">
+        <h5 class="card-title">第 {{ q }} 關</h5>
+        {% if q == 1 %}
+          <p class="card-text">🌩️ 暴風雨來襲！市場暴跌 20%，你會怎麼辦？</p>
+          <button class="answer-btn" data-value="1" data-text="🐢 停下航程，保護本金">🐢 停下航程，保護本金</button>
+          <button class="answer-btn" data-value="3" data-text="🦊 觀察風向，調整航向">🦊 觀察風向，調整航向</button>
+          <button class="answer-btn" data-value="5" data-text="🦁 迎風前行，相信暴風雨後有寶藏">🦁 迎風前行，相信暴風雨後有寶藏</button>
+        {% elif q == 2 %}
+          <p class="card-text">🎯 這趟冒險，你的首要目標是？</p>
+          <button class="answer-btn" data-value="1" data-text="安全抵達港口">安全抵達港口</button>
+          <button class="answer-btn" data-value="3" data-text="沿途探索資源">沿途探索資源</button>
+          <button class="answer-btn" data-value="5" data-text="尋找傳說寶藏">尋找傳說寶藏</button>
+        {% elif q == 3 %}
+          <p class="card-text">🗡️ 好友遞給你「高風險神器」，你會？</p>
+          <button class="answer-btn" data-value="1" data-text="婉拒（太危險）">婉拒（太危險）</button>
+          <button class="answer-btn" data-value="3" data-text="小心試用">小心試用</button>
+          <button class="answer-btn" data-value="5" data-text="全力使用">全力使用</button>
+        {% elif q == 4 %}
+          <p class="card-text">🏴‍☠️ 你遇到海盜要求合作，你會？</p>
+          <button class="answer-btn" data-value="1" data-text="拒絕合作">拒絕合作</button>
+          <button class="answer-btn" data-value="3" data-text="小額合作">小額合作</button>
+          <button class="answer-btn" data-value="5" data-text="大膽合作">大膽合作</button>
+        {% elif q == 5 %}
+          <p class="card-text">🤝 你要挑選一位航海伙伴，他是？</p>
+          <button class="answer-btn" data-value="1" data-text="老水手（保守）">老水手（保守）</button>
+          <button class="answer-btn" data-value="3" data-text="聰明商人（平衡）">聰明商人（平衡）</button>
+          <button class="answer-btn" data-value="5" data-text="冒險勇者（激進）">冒險勇者（激進）</button>
+        {% elif q == 6 %}
+          <p class="card-text">💰 海上漂浮金幣，你會？</p>
+          <button class="answer-btn" data-value="1" data-text="不撿，怕有陷阱">不撿，怕有陷阱</button>
+          <button class="answer-btn" data-value="3" data-text="撿一點試試">撿一點試試</button>
+          <button class="answer-btn" data-value="5" data-text="全撿起來！">全撿起來！</button>
+        {% elif q == 7 %}
+          <p class="card-text">⚓ 你的航海經驗像是？</p>
+          <button class="answer-btn" data-value="1" data-text="新手水手">新手水手</button>
+          <button class="answer-btn" data-value="3" data-text="有經驗的水手">有經驗的水手</button>
+          <button class="answer-btn" data-value="5" data-text="老練船長">老練船長</button>
+        {% elif q == 8 %}
+          <p class="card-text">🗺️ 海圖上出現未知島嶼，你會？</p>
+          <button class="answer-btn" data-value="1" data-text="繞道而行">繞道而行</button>
+          <button class="answer-btn" data-value="3" data-text="小心靠近">小心靠近</button>
+          <button class="answer-btn" data-value="5" data-text="立刻登島探險">立刻登島探險</button>
+        {% elif q == 9 %}
+          <p class="card-text">⚖️ 船上資源有限，你會？</p>
+          <button class="answer-btn" data-value="1" data-text="優先存糧，確保安全">優先存糧，確保安全</button>
+          <button class="answer-btn" data-value="3" data-text="平均分配">平均分配</button>
+          <button class="answer-btn" data-value="5" data-text="全力造船，快速探索">全力造船，快速探索</button>
+        {% elif q == 10 %}
+          <p class="card-text">🔥 旅程最後，你能承受的最大損失是？</p>
+          <button class="answer-btn" data-value="1" data-text="5% 以內">5% 以內</button>
+          <button class="answer-btn" data-value="3" data-text="10% - 20%">10% - 20%</button>
+          <button class="answer-btn" data-value="5" data-text="30% 以上">30% 以上</button>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- 隱藏表單 -->
+  <form method="POST" action="/topic/9/test" id="quiz-form">
+    {% for i in range(1,11) %}
+      <input type="hidden" name="q{{ i }}" id="q{{ i }}">
+      <input type="hidden" name="a{{ i }}" id="a{{ i }}">
+    {% endfor %}
+    <button type="submit" id="submit-btn" 
+            class="btn btn-primary px-5 py-2" 
+            style="display:none;">
+      ✨ 查看你的冒險角色
+    </button>
+  </form>
+
+  {% if result %}
+  <div class="mt-5 p-4 text-center shadow rounded animate__animated animate__fadeInUp" style="background:#fafafa;">
+    <h4>🎯 你的冒險角色</h4>
+    <h2>{{ result[0] }}</h2>
+    <p class="mt-3">{{ result[2] }}</p>
+    <hr>
+    <h5>📋 你的回答回顧</h5>
+    <div id="review-container" style="max-width:600px; margin:auto;">
+      {% for i in range(1,11) %}
+      <div class="review-card shadow p-3 rounded animate__animated" style="display:none;">
+        <h6>第 {{ i }} 題</h6>
+        <p><b>題目：</b> {{ questions[i] }}</p>
+        <p><b>你的選擇：</b> {{ review_answers["a" ~ i] }}</p>
+      </div>
+      {% endfor %}
+      <div class="d-flex justify-content-between mt-3">
+        <button class="btn btn-outline-secondary" id="prev-review">⬅ 上一題</button>
+        <button class="btn btn-outline-warning" id="next-review">下一題 ➡</button>
+      </div>
+    </div>
+    <hr>
+    <h5>📊 配置比例</h5>
+    <div style="max-width:600px; margin:auto;">
+      <canvas id="allocationChart" style="height:350px;"></canvas>
+    </div>
+    <div class="mt-4 d-flex justify-content-center">
+      <a href="/topic/9/test" class="btn btn-success px-4 py-2">🔄 重新測驗</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- CSS -->
+<style>
+.progress { background-color: #e0e0e0; border-radius: 20px; overflow: hidden; }
+.progress-bar { transition: width 0.6s ease-in-out; background: linear-gradient(90deg, #42a5f5, #81c784); }
+.question-card { max-width: 600px; width: 100%; margin: auto; border-radius: 15px; background: #fff; box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+.answer-btn { display: block; width: 100%; margin: 8px 0; padding: 10px 16px; font-size: 15px; border-radius: 8px; border: 1px solid #90caf9; background-color: #e3f2fd; color: #0d47a1; transition: all 0.3s ease; }
+.answer-btn:hover { background-color: #bbdefb; border-color: #64b5f6; transform: scale(1.02); }
+.answer-btn:active, .answer-btn.selected { background-color: #42a5f5; color: #fff; border-color: #1e88e5; }
+.jump { animation: jump 1s infinite; }
+@keyframes jump { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+#submit-btn { display: block; margin: 20px auto 0 auto; }
+</style>
+
+<!-- JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const cards = document.querySelectorAll(".question-card");
+  const total = cards.length;
+  let current = 0;
+
+  function showCard(index, animationIn="animate__fadeInRight") {
+    cards.forEach((c, i) => {
+      c.style.display = (i === index ? "block" : "none");
+      if (i === index) {
+        c.classList.remove("animate__fadeOutLeft","animate__fadeInRight");
+        c.classList.add(animationIn);
+      }
+    });
+    let percent = (index===0)?0:(index*10);
+    const bar=document.getElementById("progress-bar");
+    const dinoWrapper=document.getElementById("dino-wrapper");
+    const progressText=document.getElementById("progress-text");
+    bar.style.width=percent+"%";
+    progressText.innerText=percent+"%";
+    let barWidth=document.querySelector(".progress-wrapper").offsetWidth;
+    let dinoPos=(percent/100)*barWidth;
+    dinoWrapper.style.left=dinoPos+"px";
+  }
+
+  document.querySelectorAll(".answer-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const value=btn.dataset.value, text=btn.dataset.text;
+      const qid="q"+(current+1), aid="a"+(current+1);
+      document.getElementById(qid).value=value;
+      document.getElementById(aid).value=text;
+      cards[current].classList.add("animate__fadeOutLeft");
+      setTimeout(()=>{
+        current++;
+        if(current<total){ showCard(current,"animate__fadeInRight"); }
+        else{
+          document.getElementById("progress-bar").style.width="100%";
+          document.getElementById("progress-text").innerText="100%";
+          document.getElementById("submit-btn").style.display="block";
+          cards[current-1].style.display="none";
+          document.getElementById("dino-wrapper").style.left="100%";
+        }
+      },400);
+    });
+  });
+  showCard(0);
+
+  {% if result %}
+  let reviewIndex=0;
+  const reviews=document.querySelectorAll(".review-card");
+  function showReview(i){ reviews.forEach((c,idx)=>{c.style.display=(i===idx)?"block":"none";}); }
+  showReview(0);
+  document.getElementById("prev-review").addEventListener("click",()=>{if(reviewIndex>0){reviewIndex--;showReview(reviewIndex);}});
+  document.getElementById("next-review").addEventListener("click",()=>{if(reviewIndex<reviews.length-1){reviewIndex++;showReview(reviewIndex);}});
+  const ctx=document.getElementById('allocationChart').getContext('2d');
+  new Chart(ctx,{type:'doughnut',data:{labels:{{ allocation.keys()|list|tojson|safe }},datasets:[{data:{{ allocation.values()|list|tojson|safe }},backgroundColor:['#64b5f6','#81c784','#ffd54f','#ba68c8'],borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+  {% endif %}
+</script>
+{% endblock %}

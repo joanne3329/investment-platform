@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <!-- 標題區 -->
+  <div class="text-center mb-5">
+    <h1 class="fw-bold animate__animated animate__fadeInDown">{{ title }}</h1>
+    <p class="text-muted fs-5 animate__animated animate__fadeIn">ETF 入門學習筆記</p>
+  </div>
+
+  <!-- 1. ETF 定義 -->
+  <section id="intro" class="row align-items-center mb-5">
+    <div class="col-md-6 animate__animated animate__fadeInLeft">
+      <h3>📖 ETF = 交易所買賣基金</h3>
+      <p class="lead">
+        ETF (Exchange Traded Fund) 兼具 <b>「指數追蹤」</b>、<b>「股票交易」</b>、<b>「基金管理」</b> 三大特色。
+      </p>
+      <ul>
+        <li>📊 指數：追蹤某一個市場指數</li>
+        <li>📈 股票型：像一般股票一樣在券商交易</li>
+        <li>💼 基金：由投信公司管理，分散風險</li>
+      </ul>
+    </div>
+    <div class="col-md-6 text-center animate__animated animate__fadeInRight">
+      <img src="{{ url_for('static', filename='img/egg1.png') }}" alt="ETF 簡介"
+           class="img-fluid rounded shadow-lg">
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 2. ETF vs 股票 -->
+  <section id="compare" class="row align-items-center mb-5 flex-row-reverse">
+    <div class="col-md-6 animate__animated animate__fadeInRight">
+      <h3>⚖️ ETF 與股票的差異</h3>
+      <p class="lead">
+        股票型 ETF 能分散持股風險，適合追求資本成長的新手；<br>
+        債券型 ETF 則提供穩定收益，有助降低投資組合波動。
+      </p>
+      <div class="alert alert-info shadow-sm">
+        ETF 操作簡單、資訊透明、容易追蹤績效、成本較低，<br>
+        是投資新手與長期投資的好選擇。
+      </div>
+    </div>
+    <div class="col-md-6 text-center animate__animated animate__fadeInLeft">
+      <img src="{{ url_for('static', filename='img/egg1.png') }}" alt="ETF vs 股票"
+           class="img-fluid rounded shadow-lg">
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 3. ETF 四大種類 -->
+  <section id="types" class="text-center mb-5">
+    <h3 class="mb-4 animate__animated animate__fadeInDown">📊 ETF 四大種類</h3>
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="card h-100 shadow-sm hover-card">
+          <div class="card-body">
+            <h5>📈 股票 ETF</h5>
+            <p>區域型、國家型、產業型、主題型</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 shadow-sm hover-card">
+          <div class="card-body">
+            <h5>💵 債券 ETF</h5>
+            <p>提供穩定收益，降低投資波動</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 shadow-sm hover-card">
+          <div class="card-body">
+            <h5>🌾 商品 ETF</h5>
+            <p>能源、貴金屬、農產品</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 shadow-sm hover-card">
+          <div class="card-body">
+            <h5>💱 貨幣 ETF</h5>
+            <p>外匯、貨幣市場工具</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-4">
+      <img src="{{ url_for('static', filename='img/egg1.png') }}" alt="ETF 種類"
+           class="img-fluid rounded shadow-lg">
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 4. 債券 ETF 挑選 -->
+  <section id="bond" class="row align-items-center mb-5">
+    <div class="col-md-6 animate__animated animate__fadeInLeft">
+      <h3>💵 債券 ETF 該怎麼挑？</h3>
+      <ol class="fs-5">
+        <li>確認投資目標：現金流 or 資本增值</li>
+        <li>了解費用結構</li>
+        <li>追蹤標的：短期 / 長期債券</li>
+        <li>債券種類：政府 / 新興市場 / 企業</li>
+        <li>信用評等</li>
+        <li>利率與價格關係</li>
+        <li>存續期間 (Duration)</li>
+        <li>規模與流動性</li>
+      </ol>
+    </div>
+    <div class="col-md-6 text-center animate__animated animate__fadeInRight">
+      <img src="{{ url_for('static', filename='img/egg1.png') }}" alt="債券 ETF 挑選"
+           class="img-fluid rounded shadow-lg">
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 5. ETF 投資優勢 -->
+  <section id="advantage" class="text-center mb-5">
+    <h3 class="mb-4 animate__animated animate__fadeInDown">🚀 ETF 投資優勢</h3>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="p-4 bg-light rounded shadow-sm hover-card h-100">
+          <h5>⚡ 即時交易靈活</h5>
+          <p>像股票一樣即時買賣，不受申購贖回限制</p>
+          <p class="text-muted">Anyone × Anytime × Anywhere</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-4 bg-light rounded shadow-sm hover-card h-100">
+          <h5>📊 投資操作彈性</h5>
+          <p>多樣化、低成本、透明度高</p>
+          <p class="text-muted">能快速建立投資組合</p>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-4">
+      <img src="{{ url_for('static', filename='img/egg1.png') }}" alt="ETF 投資優勢"
+           class="img-fluid rounded shadow-lg">
+    </div>
+  </section>
+
+  <!-- 返回按鈕 -->
+  <div class="text-center mt-5">
+    <a href="/map" class="btn btn-secondary">返回學習地圖</a>
+  </div>
+</div>
+
+<!-- 動態效果 -->
+<script>
+  // 平滑捲動
+  document.querySelectorAll('a.nav-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute('href')).scrollIntoView({
+        behavior: 'smooth'
+      });
+    });
+  });
+
+  // hover 卡片動態效果
+  document.querySelectorAll('.hover-card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      card.classList.add('shadow-lg', 'animate__animated', 'animate__pulse');
+    });
+    card.addEventListener('mouseleave', () => {
+      card.classList.remove('shadow-lg', 'animate__animated', 'animate__pulse');
+    });
+  });
+</script>
+{% endblock %}

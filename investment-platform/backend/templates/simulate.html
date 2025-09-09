@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}投資模擬工具{% endblock %}
+
+{% block content %}
+<div class="simulate-card">
+  <h2>📈 投資模擬工具</h2>
+  <p>輸入資產配置與本金，系統將進行 5000 次蒙地卡羅模擬，幫助你了解可能的投資結果。</p>
+
+  <!-- 表單 -->
+  <form method="POST" class="simulate-form">
+    <input type="number" name="initial" placeholder="本金 (新台幣)" value="100000" required>
+    <input type="number" name="years" placeholder="投資年限 (年)" value="10" required>
+    <input type="number" name="stock" placeholder="股票 (%)" required>
+    <input type="number" name="bond" placeholder="債券 (%)" required>
+    <input type="number" name="etf" placeholder="ETF (%)" required>
+    <button type="submit" class="btn">開始模擬</button>
+  </form>
+
+  {% if result %}
+    <!-- 模擬結果 -->
+    <div class="result-box">
+      <h3>📊 模擬結果</h3>
+      <p>💰 投資本金：新台幣 {{ result.initial | int }} 元</p>
+      <p>⏳ 投資年限：{{ result.years }} 年</p>
+      <p>📈 預期年化報酬率：約 {{ result.expected_return }}%</p>
+      <p>📉 風險 (波動率)：{{ result.risk }}%</p>
+      <p>⭐ 平均 {{ result.years }} 年後資產：約 新台幣 {{ result.mean_value | int }} 元</p>
+      <p>🔻 10% 分位數：約 新台幣 {{ result.percentile_10 | int }} 元</p>
+      <p>🔺 90% 分位數：約 新台幣 {{ result.percentile_90 | int }} 元</p>
+    </div>
+
+    <!-- 圖表區塊 -->
+    <div class="charts">
+      <div class="chart-container">
+        <canvas id="pieChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <canvas id="histChart"></canvas>
+      </div>
+    </div>
+
+    <div class="btn-box">
+      <a href="{{ url_for('simulate.simulate') }}" class="btn">🔄 重新模擬</a>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  .simulate-card {
+    background: #fff;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  .simulate-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px auto;
+  }
+  .simulate-form input {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  .btn {
+    padding: 10px 20px;
+    background: #3B82F6;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+  }
+  .btn:hover {
+    background: #2563EB;
+  }
+  .result-box {
+    text-align: left;
+    margin: 20px 0;
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 10px;
+  }
+  .charts {
+    display: flex;
+    flex-direction: column; /* 改成垂直 */
+    gap: 25px;
+    margin: 30px 0;
+    align-items: center;
+  }
+  .chart-container {
+    width: 400px; /* 固定大小讓比例一致 */
+    height: 300px;
+  }
+  .btn-box {
+    margin-top: 20px;
+    text-align: center;
+  }
+</style>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  {% if result %}
+  // 配置比例圖
+  new Chart(document.getElementById('pieChart'), {
+    type: 'pie',
+    data: {
+      labels: ['股票', '債券', 'ETF'],
+      datasets: [{
+        data: [{{ result.stock }}, {{ result.bond }}, {{ result.etf }}],
+        backgroundColor: ['#60A5FA', '#FCD34D', '#34D399'],
+        borderWidth: 1
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
+  });
+
+  // 分布直方圖
+  new Chart(document.getElementById('histChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ labels|safe }},
+      datasets: [{
+        label: '模擬結果分布 (次數)',
+        data: {{ values|safe }},
+        backgroundColor: '#60A5FA88'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { autoSkip: true, maxRotation: 45 } },
+        y: { beginAtZero: true }
+      }
+    }
+  });
+  {% endif %}
+</script>
+{% endblock %}

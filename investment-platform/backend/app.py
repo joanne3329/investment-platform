@@ -1,45 +1,57 @@
 from flask import Flask, render_template, redirect, url_for, request, flash
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from models import db, User, bcrypt
+from simulate import simulate_bp  # 投資模擬工具 blueprint
+
+# ========== 開關設定 ==========
+USE_LOGIN = False
+
+if USE_LOGIN:
+    from flask_login import (
+        LoginManager, login_user, login_required,
+        logout_user, current_user
+    )
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'yoursecretkey'  # ⚠️ 正式環境請換成隨機生成的金鑰
+app.config['SECRET_KEY'] = 'yoursecretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# 初始化
 db.init_app(app)
 bcrypt.init_app(app)
 
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'  # 沒登入會自動導向 login 頁
+# 登入初始化
+if USE_LOGIN:
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'login'
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
-# 首頁
+# ========== 註冊 Blueprint ==========
+app.register_blueprint(simulate_bp, url_prefix="/simulate")
+
+# ========== 基本路由 ==========
 @app.route("/")
 def index():
     return render_template("index.html")
 
-# 主頁 (需要登入)
 @app.route("/home")
-@login_required
 def home():
-    return render_template("home.html", user=current_user)
+    if USE_LOGIN:
+        return render_template("home.html", user=current_user)
+    return render_template("home.html")
 
-# 學習地圖 (需要登入)
 @app.route("/map")
-@login_required
 def map():
+    if USE_LOGIN:
+        return render_template("map.html", user=current_user)
     return render_template("map.html")
 
-# 單一主題頁面
 @app.route("/topic/<int:topic_id>")
-@login_required
 def topic(topic_id):
-    # 可以根據 topic_id 來決定要顯示的內容
     topics = {
         1: "金融市場全貌",
         2: "股票基礎入門",
@@ -52,67 +64,62 @@ def topic(topic_id):
         9: "期末成果驗收"
     }
     title = topics.get(topic_id, "未知主題")
+
+    # 🚩 Week6 改成直接跳 week6.html
+    if topic_id == 6:
+        return render_template("week6.html", title=title)
+
     return render_template("topic.html", topic_id=topic_id, title=title)
 
-# 註冊
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
+# ========== 第九週心理測驗 ==========
+@app.route("/topic/9/test", methods=["GET", "POST"])
+def topic9_test():
+    if request.method == "GET":
+        return render_template("week9.html")
 
-        # 檢查帳號是否存在
-        if User.query.filter_by(username=username).first():
-            flash("❌ 帳號已存在！")
-            return redirect(url_for('register'))
+    # ✅ 只取數字答案 (q1~q10)，避免 ValueError
+    answers = {k: v for k, v in request.form.items() if k.startswith("q")}
+    scores = [int(v) for v in answers.values()]
+    score = sum(scores)
 
-        # 建立新使用者
-        new_user = User(username=username, email=email)
-        new_user.set_password(password)
-        db.session.add(new_user)
-        db.session.commit()
+    # ✅ 文字答案 (a1~a10) 用來顯示回顧
+    review_answers = {k: v for k, v in request.form.items() if k.startswith("a")}
 
-        # 註冊後自動登入
-        login_user(new_user)
-        flash("✅ 註冊成功，已自動登入！")
-        return redirect(url_for('home'))
+    # 題目字典
+    questions = {
+        1: "🌩️ 暴風雨來襲！市場暴跌 20%，你會怎麼辦？",
+        2: "🎯 這趟冒險，你的首要目標是？",
+        3: "🗡️ 好友遞給你『高風險神器』，你會？",
+        4: "🏴‍☠️ 你遇到海盜要求合作，你會？",
+        5: "🤝 你要挑選一位航海伙伴，他是？",
+        6: "💰 海上漂浮金幣，你會？",
+        7: "⚓ 你的航海經驗像是？",
+        8: "🗺️ 海圖上出現未知島嶼，你會？",
+        9: "⚖️ 船上資源有限，你會？",
+        10: "🔥 旅程最後，你能承受的最大損失是？"
+    }
 
-    return render_template("register.html")
+    # 判斷角色與配置
+    if score <= 15:
+        result = ("🐢 保守型探險者", "偏向安全，適合定存、債券、保守型ETF", "你謹慎小心，重視資產安全。")
+        allocation = {"定存/債券": 70, "ETF": 20, "股票": 10}
+    elif score <= 30:
+        result = ("🦊 平衡型探險者", "股票+債券+ETF均衡配置", "你懂得觀察環境，追求風險與收益平衡。")
+        allocation = {"定存/債券": 40, "ETF": 30, "股票": 30}
+    elif score <= 45:
+        result = ("🦁 積極型探險者", "股票為主，追求長期成長", "你勇於承擔風險，期待高報酬。")
+        allocation = {"股票": 70, "ETF": 20, "債券": 10}
+    else:
+        result = ("🦅 冒險型探險者", "高風險資產為主", "你像老鷹一樣追求高空獵物，承擔巨大風險。")
+        allocation = {"股票": 90, "ETF": 10}
 
-# 登入
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form['username']
-        password = request.form['password']
+    return render_template("week9.html",
+                           result=result,
+                           allocation=allocation,
+                           review_answers=review_answers,
+                           questions=questions)
 
-        user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password):
-            login_user(user)
-            flash(f"👋 歡迎回來，{username}！")
-            return redirect(url_for('home'))
-        else:
-            flash("❌ 帳號或密碼錯誤！")
-
-    return render_template("login.html")
-
-# 登出
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    flash("🚪 已成功登出！")
-    return redirect(url_for('index'))
-
-# 使用者清單 (開發用，正式上線要移除或加權限保護)
-@app.route("/users")
-@login_required
-def users():
-    # 這裡只顯示 ID, 帳號, Email
-    user_list = User.query.all()
-    return render_template("users.html", users=user_list)
-
+# ========== 主程式 ==========
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
