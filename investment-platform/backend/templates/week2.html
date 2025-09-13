@@ -1,0 +1,443 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  :root{
+    --bg:#f6f8fb; --card:#fff; --ink:#0b1a2b; --muted:#6b7280;
+    --accent:#0b74de; --accent2:#2ea8ff; --ok:#16a34a; --soft:#eef6ff; --warn:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","Segoe UI",Roboto,sans-serif;}
+  .wrap{max-width:1180px;margin:24px auto;padding:0 16px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  h1{font-size:20px;margin:0}
+  .progress{flex:1;min-width:320px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border-radius:12px;padding:12px;box-shadow:0 8px 24px rgba(11,35,60,.08)}
+  .progress .bar{height:12px;background:rgba(255,255,255,.22);border-radius:8px;overflow:hidden;margin-top:8px}
+  .progress .fill{height:100%;width:0%;background:#fff;border-radius:8px;transition:width .35s ease}
+  .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:16px}
+  .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 8px 24px rgba(11,35,60,.06)}
+  .step{display:none}
+  .step.active{display:block}
+  .step h2{margin:0 0 8px 0;font-size:18px}
+  .small{color:var(--muted);font-size:13px}
+  .controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer}
+  .primary{background:var(--accent);color:#fff}
+  .ghost{background:#fff;color:var(--accent);border:1px solid #cfe7ff}
+  .success{background:var(--ok);color:#fff}
+  .pill{display:inline-block;background:#e6f2ff;color:#094a9a;border:1px solid #cfe1ff;border-radius:999px;padding:2px 8px;font-size:12px;margin-right:6px}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .drag-area{display:flex;gap:8px}
+  .draggable{padding:8px 10px;background:#fff;border:1px solid #e6eef9;border-radius:8px;cursor:grab}
+  .dropzone{min-height:110px;padding:10px;border-radius:8px;background:#fbfbfd;border:2px dashed #e6eef9;display:flex;flex-direction:column;gap:8px}
+  .aside-title{font-weight:700;margin-bottom:6px}
+  .glossary .item{border:1px solid #e6eef9;border-radius:8px;padding:10px;margin-bottom:8px;background:#fbfdff}
+  .glossary .item h4{margin:0;font-size:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+  .glossary .item .def{display:none;margin-top:6px;color:#063a6b}
+  .avatar-grid{display:flex;gap:8px;flex-wrap:wrap}
+  .avatar{width:82px;height:82px;border-radius:12px;background:#fbfdff;border:2px solid transparent;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .avatar.selected{border-color:var(--accent);box-shadow:0 8px 24px rgba(11,35,60,.08)}
+  .svgBox{width:120px;height:120px}
+  .note{background:var(--soft);border-left:4px solid var(--accent);padding:10px;border-radius:8px;color:#063a6b;margin-top:8px}
+  footer{margin:18px 0 10px;color:var(--muted);text-align:center;font-size:13px}
+  @media(max-width:980px){.grid{grid-template-columns:1fr}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>{{ title }}</h1>
+      <div class="small">本週主題：三因子、殖利率、分類練習。第 2 週進度，共 9 週。</div>
+    </div>
+    <div class="progress">
+      <div class="row" style="justify-content:space-between">
+        <div><strong>單元進度</strong> <span id="pct">0%</span></div>
+        <div class="small" id="avatarLabel">角色：恐龍蛋（第 2 週） • XP <span id="xp">0</span></div>
+      </div>
+      <div class="bar"><div id="barFill" class="fill"></div></div>
+    </div>
+  </header>
+
+  <div class="wrap">
+  <header>
+    <div>
+      <h1>Week 2 股票入門（逐步學習）</h1>
+      <div class="small">本週主題：三因子、殖利率、分類練習。第 2 週進度，共 9 週。</div>
+    </div>
+    <div class="progress">
+      <div class="row" style="justify-content:space-between">
+        <div><strong>單元進度</strong> <span id="pct">0%</span></div>
+        <div class="small" id="avatarLabel">角色：恐龍蛋（第 2 週） • XP <span id="xp">0</span></div>
+      </div>
+      <div class="bar"><div id="barFill" class="fill"></div></div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <main>
+      <!-- Step 0 角色/蛋視覺 -->
+      <section class="card step active" id="s0">
+        <h2>Step 0：選擇學習角色（本週預設為恐龍蛋）</h2>
+        <div class="small">第 1 週從「恐龍蛋」開始。本週（第 2 週）完成任務後，蛋會出現更明顯裂紋與芽點數，累積到第 9 週孵化成獨特恐龍。</div>
+        <div class="row" style="margin-top:10px">
+          <div id="eggBox" class="svgBox"></div>
+          <div class="avatar-grid">
+            <div class="avatar selected" data-role="egg" title="恐龍蛋（預設）" id="roleEgg"></div>
+            <div class="avatar" data-role="learner" title="學習者（示意）" id="roleLearner"></div>
+            <div class="avatar" data-role="ranger" title="研究員（示意）" id="roleRanger"></div>
+          </div>
+        </div>
+        <div class="note">說明：正式版本第 1～9 週會逐步解鎖不同的外觀與道具。本頁為第 2 週示範。</div>
+        <div class="controls">
+          <button class="primary" id="go1">開始本週學習</button>
+        </div>
+      </section>
+
+      <!-- Step 1 引導 -->
+      <section class="card step" id="s1">
+        <h2>Step 1：引導 — 市場上股票可以怎麼分？</h2>
+        <div class="small">先用你的直覺勾選你認為合理的分類，再進入學理。</div>
+        <div class="row" style="margin-top:6px">
+          <label><input type="checkbox" class="tag" value="產業別"> 產業別</label>
+          <label><input type="checkbox" class="tag" value="市值大小"> 市值大小</label>
+          <label><input type="checkbox" class="tag" value="價值/成長"> 價值/成長</label>
+          <label><input type="checkbox" class="tag" value="配息高低"> 配息高低</label>
+          <label><input type="checkbox" class="tag" value="本益比"> 本益比 (P/E)</label>
+        </div>
+        <input id="tagOther" placeholder="其他分類（自行輸入）" style="margin-top:8px;width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef9;">
+        <div class="controls">
+          <button class="primary" id="to2">完成並前往學理</button>
+          <button class="ghost" id="back0">返回</button>
+        </div>
+      </section>
+
+      <!-- Step 2 學理：三因子 -->
+      <section class="card step" id="s2">
+        <h2>Step 2：學理 — 三因子模型</h2>
+        <div class="small">SMB 規模因子（小公司報酬傾向高於大公司）、HML 價值因子（價值股傾向高於成長股）、市場因子。</div>
+        <div class="note">價值/成長的簡化判斷：<strong>市值淨值比（P/B）高 → 成長股；低 → 價值股</strong>。一般而言，價值股較常發股利，成長股偏向資本利得。</div>
+        <div style="margin-top:10px">
+          <div class="small">請拖曳卡片到適合的類別</div>
+          <div class="row" style="margin-top:8px">
+            <div style="flex:1">
+              <div class="draggable" draggable="true" id="c1">公司 A：P/B 0.9、配息高</div>
+              <div class="draggable" draggable="true" id="c2" style="margin-top:8px">公司 B：P/B 3.5、配息低</div>
+              <div class="draggable" draggable="true" id="c3" style="margin-top:8px">公司 C：P/B 1.2、配息中</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+              <div class="dropzone" id="dzValue"><strong>價值股</strong></div>
+              <div class="dropzone" id="dzGrowth"><strong>成長股</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="primary" id="check2">檢查並繼續</button>
+          <button class="ghost" id="back1">返回</button>
+        </div>
+      </section>
+
+      <!-- Step 3 殖利率拆解 -->
+      <section class="card step" id="s3">
+        <h2>Step 3：殖利率與總報酬拆解</h2>
+        <div class="small">殖利率 = 股利 ÷ 股價；總報酬率 = 股利收益率 + 資本利得率。</div>
+        <div class="row" style="margin-top:8px">
+          <label>起始股價 NT$ <input id="p0" type="number" value="100" style="width:90px;margin-left:6px"></label>
+          <label>一年後股價 NT$ <input id="p1" type="number" value="110" style="width:90px;margin-left:6px"></label>
+          <label>年度股利 NT$ <input id="div" type="number" value="5" style="width:90px;margin-left:6px"></label>
+        </div>
+        <div class="controls">
+          <button class="primary" id="calcYield">計算</button>
+          <button class="ghost" id="back2">返回</button>
+        </div>
+        <div id="yieldOut" class="note" style="display:none"></div>
+      </section>
+
+      <!-- Step 4 本益比互動 -->
+      <section class="card step" id="s4">
+        <h2>Step 4：本益比 (P/E) 互動</h2>
+        <div class="small">P/E = 股價 ÷ EPS。請調整 EPS 或股價觀察變化。</div>
+        <div style="margin-top:8px">
+          <div>EPS <span id="epsVal" class="pill">5.0</span> <input id="eps" type="range" min="0.1" max="30" step="0.1" value="5" style="width:100%"></div>
+          <div style="margin-top:8px">股價 <span id="prVal" class="pill">100</span> <input id="pr" type="range" min="10" max="1000" step="1" value="100" style="width:100%"></div>
+          <div class="note" id="peNote" style="margin-top:10px">P/E = 20.0。一般而言，數值較高代表市場期待較高或價格偏貴。</div>
+        </div>
+        <div class="controls">
+          <button class="primary" id="to5">下一步</button>
+          <button class="ghost" id="back3">返回</button>
+        </div>
+      </section>
+
+      <!-- Step 5 小測驗 -->
+      <section class="card step" id="s5">
+        <h2>Step 5：小測驗</h2>
+        <div class="small">三題快速檢核</div>
+        <div style="margin-top:8px">
+          <div>1) 市值等於？</div>
+          <div class="row"><button class="ghost quiz">股價 × 發行股數</button><button class="ghost quiz">股利 × 股數</button></div>
+          <div style="margin-top:8px">2) 配息高且 P/B 偏低，偏向？</div>
+          <div class="row"><button class="ghost quiz">成長股</button><button class="ghost quiz">價值股</button></div>
+          <div style="margin-top:8px">3) 總報酬率由哪兩部分？</div>
+          <div class="row"><button class="ghost quiz">股利收益率 + 資本利得率</button><button class="ghost quiz">本益比 + 市值</button></div>
+        </div>
+        <div id="quizOut" class="note" style="display:none"></div>
+        <div class="controls">
+          <button class="primary" id="to6">下一步</button>
+          <button class="ghost" id="back4">返回</button>
+        </div>
+      </section>
+
+      <!-- Step 6 反思 -->
+      <section class="card step" id="s6">
+        <h2>Step 6：反思與延伸</h2>
+        <div class="small">除了學理的分類，你還會如何分類？（例如：產業、波動度、P/E、成長率…）</div>
+        <textarea id="reflect" placeholder="寫下你的想法…" style="width:100%;height:90px;margin-top:8px;padding:8px;border-radius:8px;border:1px solid #e6eef9"></textarea>
+        <div class="controls">
+          <button class="primary" id="to7">提交並前往完成</button>
+          <button class="ghost" id="back5">返回</button>
+        </div>
+      </section>
+
+      <!-- Step 7 完成 -->
+      <section class="card step" id="s7">
+        <h2>Step 7：本週完成</h2>
+        <div class="note">恭喜完成第 2 週！恐龍蛋獲得養分 +10，裂紋更明顯。請於下週繼續養成。</div>
+        <div class="controls">
+          <button class="success" id="finish">儲存成就</button>
+          <button class="ghost" id="restart">重新體驗本週</button>
+        </div>
+      </section>
+    </main>
+
+    <aside>
+      <div class="card">
+        <div class="aside-title">恐龍養成狀態（第 2 週）</div>
+        <div class="row" style="justify-content:space-between">
+          <div id="eggMini" class="svgBox"></div>
+          <div class="small">狀態：裂紋等級 <span id="crackLevel">1</span> / 3</div>
+        </div>
+        <div class="note" id="hint">提示：完成每一步可獲得 XP，提升裂紋等級。</div>
+      </div>
+
+      <div class="card glossary" style="margin-top:12px">
+        <div class="aside-title">學習詞彙（本週重點）</div>
+        <div class="item"><h4 data-k="yield">殖利率 <span>展開</span></h4><div class="def">股利 ÷ 股價；例如股價 100 元、股利 5 元，殖利率為 5%。</div></div>
+        <div class="item"><h4 data-k="capgain">資本利得 <span>展開</span></h4><div class="def">賣價高於買價的差額；例如 100 元買進、110 元賣出，資本利得 10%。</div></div>
+        <div class="item"><h4 data-k="valuegrowth">價值股 / 成長股 <span>展開</span></h4><div class="def">以 P/B 簡化：較低者偏價值股（常配息），較高者偏成長股（價差為主）。</div></div>
+        <div class="item"><h4 data-k="pe">本益比（P/E）<span>展開</span></h4><div class="def">股價 ÷ EPS；較高可能代表期待高、也可能是估值偏高，需搭配其他指標。</div></div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="aside-title">教師建議</div>
+        <div class="small">教學順序：引導 → 學理（三因子）→ 活動（分類）→ 殖利率 → P/E → 測驗 → 反思。可搭配小組討論與發表。</div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>Prototype for classroom demo — 自含資產版本（無外部圖片依賴）</footer>
+</div>
+
+
+  <footer>Prototype for classroom demo — 自含資產版本（無外部圖片依賴）</footer>
+  <a href="{{ url_for('map') }}" class="btn btn-secondary mt-3">返回學習地圖</a>
+</div>
+
+<script>
+/* ----- Inline SVG assets (egg states & avatars) ----- */
+function svgEgg(cracks=0, sprout=false){
+  // cracks: 0~3
+  const crackPath = cracks===0 ? '' :
+    cracks===1 ? '<path d="M60 70 l10 14 l-8 12" stroke="#333" stroke-width="2" fill="none"/>' :
+    cracks===2 ? '<path d="M55 64 l12 16 l-6 10 M80 80 l-8 10" stroke="#333" stroke-width="2" fill="none"/>' :
+    '<path d="M52 60 l14 18 l-6 10 M78 76 l-8 10 M65 88 l6 8" stroke="#333" stroke-width="2" fill="none"/>';
+  const sproutPath = sprout ? '<path d="M75 40 q8 -10 18 -6 q-6 10 -18 10 z" fill="#75c94b"/><rect x="73" y="40" width="3" height="10" fill="#5aa83a"/>' : '';
+  return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="g1" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" stop-color="#fff7ee"/>
+        <stop offset="100%" stop-color="#f2e7d8"/>
+      </radialGradient>
+    </defs>
+    <rect x="0" y="0" width="120" height="120" fill="transparent"/>
+    <ellipse cx="60" cy="70" rx="36" ry="48" fill="url(#g1)" stroke="#d8c8b6" stroke-width="2"/>
+    ${crackPath}
+    ${sproutPath}
+    </svg>`;
+}
+function svgAvatar(type){
+  if(type==='learner'){
+    return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <rect width="120" height="120" rx="12" fill="#eef6ff"/>
+      <circle cx="60" cy="46" r="18" fill="#ffd7a8"/>
+      <rect x="28" y="70" width="64" height="30" rx="10" fill="#9dc7ff"/>
+    </svg>`;
+  }
+  if(type==='ranger'){
+    return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <rect width="120" height="120" rx="12" fill="#e7f9ef"/>
+      <circle cx="60" cy="46" r="18" fill="#ffe0b5"/>
+      <rect x="34" y="70" width="52" height="30" rx="10" fill="#7fd3a5"/>
+      <circle cx="90" cy="90" r="8" fill="#3b9c6d"/>
+    </svg>`;
+  }
+  // default egg
+  return svgEgg(1,true);
+}
+
+/* ----- State ----- */
+const steps = ['s0','s1','s2','s3','s4','s5','s6','s7'];
+let state = {step:0, xp:0, crack:1, role:'egg'};
+
+function save(){ localStorage.setItem('week2State', JSON.stringify(state)); }
+function load(){ const s = localStorage.getItem('week2State'); if(s){ try{ state = JSON.parse(s);}catch(e){} } }
+function showStep(i){
+  state.step = i;
+  steps.forEach((id,idx)=>document.getElementById(id).classList.toggle('active', idx===i));
+  const pct = Math.round( i/(steps.length-1) * 100 );
+  document.getElementById('barFill').style.width = pct + '%';
+  document.getElementById('pct').textContent = pct + '%';
+  document.getElementById('xp').textContent = state.xp;
+  document.getElementById('crackLevel').textContent = state.crack;
+  document.getElementById('avatarLabel').textContent = `角色：${state.role==='egg'?'恐龍蛋':state.role}（第 2 週） • XP ${state.xp}`;
+  document.getElementById('eggBox').innerHTML = svgEgg(state.crack, true);
+  document.getElementById('eggMini').innerHTML = svgEgg(state.crack, true);
+  document.querySelectorAll('.avatar').forEach(a=> a.classList.toggle('selected', a.dataset.role===state.role));
+  save();
+}
+
+/* ----- Init avatars ----- */
+function initAvatars(){
+  document.getElementById('roleEgg').innerHTML = svgAvatar('egg');
+  document.getElementById('roleLearner').innerHTML = svgAvatar('learner');
+  document.getElementById('roleRanger').innerHTML = svgAvatar('ranger');
+  document.querySelectorAll('.avatar').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      state.role = el.dataset.role;
+      state.xp += 5;
+      showStep(state.step);
+    });
+  });
+}
+
+/* ----- Drag/drop in Step 2 ----- */
+function initDragDrop(){
+  const drags = document.querySelectorAll('#s2 .draggable');
+  drags.forEach(el=>{
+    el.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', el.id); setTimeout(()=> el.style.opacity=.3, 0); });
+    el.addEventListener('dragend', ()=> el.style.opacity=1 );
+  });
+  ['dzValue','dzGrowth'].forEach(id=>{
+    const dz = document.getElementById(id);
+    dz.addEventListener('dragover', e=>{ e.preventDefault(); dz.style.borderColor='#9ed1ff'; });
+    dz.addEventListener('dragleave', ()=> dz.style.borderColor='#e6eef9' );
+    dz.addEventListener('drop', e=>{
+      e.preventDefault();
+      const idd = e.dataTransfer.getData('text/plain');
+      const node = document.getElementById(idd);
+      if(node) dz.appendChild(node);
+      dz.style.borderColor='#e6eef9';
+    });
+  });
+}
+
+/* ----- Glossary toggle ----- */
+function initGlossary(){
+  document.querySelectorAll('.glossary .item h4').forEach(h=>{
+    h.addEventListener('click', ()=>{
+      const def = h.parentElement.querySelector('.def');
+      const span = h.querySelector('span');
+      const open = def.style.display==='block';
+      def.style.display = open ? 'none' : 'block';
+      span.textContent = open ? '展開' : '收合';
+    });
+  });
+}
+
+/* ----- Step handlers ----- */
+document.addEventListener('DOMContentLoaded', ()=>{
+  load();
+  initAvatars();
+  initDragDrop();
+  initGlossary();
+  showStep(state.step||0);
+
+  document.getElementById('go1').addEventListener('click', ()=>{ state.xp+=5; showStep(1); });
+  document.getElementById('back0').addEventListener('click', ()=> showStep(0) );
+  document.getElementById('to2').addEventListener('click', ()=>{ state.xp+=10; showStep(2); });
+
+  document.getElementById('back1').addEventListener('click', ()=> showStep(1) );
+  document.getElementById('check2').addEventListener('click', ()=>{
+    const v = Array.from(document.getElementById('dzValue').querySelectorAll('.draggable')).map(n=>n.id);
+    const g = Array.from(document.getElementById('dzGrowth').querySelectorAll('.draggable')).map(n=>n.id);
+    let score = 0;
+    if(v.includes('c1')) score++;
+    if(g.includes('c2')) score++;
+    if(v.includes('c3') || g.includes('c3')) score++;
+    state.xp += 15;
+    if(score>=2 && state.crack<3) state.crack++; // 提升裂紋等級
+    document.getElementById('hint').textContent = `分類得分 ${score}/3。裂紋等級提升為 ${state.crack}。`;
+    showStep(3);
+  });
+
+  document.getElementById('back2').addEventListener('click', ()=> showStep(2) );
+  document.getElementById('calcYield').addEventListener('click', ()=>{
+    const p0 = Number(document.getElementById('p0').value);
+    const p1 = Number(document.getElementById('p1').value);
+    const dv = Number(document.getElementById('div').value);
+    if(!(p0>0)){ alert('請輸入正確的起始股價'); return; }
+    const dy = dv/p0*100;
+    const cg = (p1-p0)/p0*100;
+    const tt = dy+cg;
+    const out = document.getElementById('yieldOut');
+    out.style.display='block';
+    out.innerHTML = `殖利率：約 ${dy.toFixed(2)}%；資本利得率：約 ${cg.toFixed(2)}%；總報酬率：約 ${tt.toFixed(2)}%。`;
+    state.xp += 10;
+    if(state.crack<3) state.crack++;
+    showStep(4);
+  });
+
+  const eps = document.getElementById('eps');
+  const pr  = document.getElementById('pr');
+  function updPE(){
+    const e = Number(eps.value), p = Number(pr.value), pe = p/e;
+    document.getElementById('epsVal').textContent = e.toFixed(1);
+    document.getElementById('prVal').textContent = p.toFixed(0);
+    const txt = pe>25 ? '偏高，可能代表期待高或估值偏貴' : pe<8 ? '偏低，可能被低估或成長性有限' : '一般區間，需搭配其他指標';
+    document.getElementById('peNote').textContent = `P/E = ${pe.toFixed(1)}，${txt}。`;
+  }
+  eps.addEventListener('input', updPE); pr.addEventListener('input', updPE); updPE();
+  document.getElementById('back3').addEventListener('click', ()=> showStep(3) );
+  document.getElementById('to5').addEventListener('click', ()=>{ state.xp+=8; showStep(5); });
+
+  document.getElementById('back4').addEventListener('click', ()=> showStep(4) );
+  document.querySelectorAll('#s5 .quiz').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      const t = e.target.textContent.trim();
+      const out = document.getElementById('quizOut');
+      let msg = '';
+      if(t==='股價 × 發行股數') msg='1) 正確：市值 = 股價 × 發行股數。';
+      else if(t==='價值股') msg='2) 正確：配息高且 P/B 偏低較偏向價值股。';
+      else if(t==='股利收益率 + 資本利得率') msg='3) 正確：總報酬率由兩者相加。';
+      else msg='再想想看。';
+      out.style.display='block'; out.textContent = msg;
+    });
+  });
+  document.getElementById('to6').addEventListener('click', ()=>{ state.xp+=8; showStep(6); });
+
+  document.getElementById('back5').addEventListener('click', ()=> showStep(5) );
+  document.getElementById('to7').addEventListener('click', ()=>{
+    const txt = (document.getElementById('reflect').value||'').trim();
+    if(txt.length<3){ alert('請至少輸入 3 個字'); return; }
+    state.xp += 10;
+    showStep(7);
+  });
+
+  document.getElementById('finish').addEventListener('click', ()=>{
+    state.xp += 10;
+    alert('本週完成，XP 已更新。');
+    showStep(7);
+  });
+  document.getElementById('restart').addEventListener('click', ()=>{
+    state.step=0; state.xp=0; state.crack=1; state.role='egg'; save(); showStep(0);
+  });
+});
+</script>
+{% endblock %}

@@ -64,6 +64,14 @@ def topic(topic_id):
         9: "期末成果驗收"
     }
     title = topics.get(topic_id, "未知主題")
+    return render_template("topic.html", topic_id=topic_id, title=title)
+
+
+# ========== Week2 單獨頁面 ==========
+@app.route("/topic/2/intro")
+def week2_intro():
+    return render_template("week2.html", title="股票基礎入門")
+
 
     # 🚩 Week6 改成直接跳 week6.html
     if topic_id == 6:
