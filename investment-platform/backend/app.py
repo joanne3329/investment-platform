@@ -1,6 +1,8 @@
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, request, jsonify
 from models import db, User, bcrypt
 from simulate import simulate_bp  # 投資模擬工具 blueprint
+import torch
+from transformers import pipeline
 
 # ========== 開關設定 ==========
 USE_LOGIN = False
@@ -33,6 +35,17 @@ if USE_LOGIN:
 # ========== 註冊 Blueprint ==========
 app.register_blueprint(simulate_bp, url_prefix="/simulate")
 
+# ========== Hugging Face 中文模型 ==========
+print("CUDA 可用:", torch.cuda.is_available())
+device = 0 if torch.cuda.is_available() else -1
+
+# 改成公開模型 → 不用登入 Hugging Face
+generator = pipeline(
+    "text-generation",
+    model="uer/gpt2-chinese-cluecorpussmall",
+    device=device
+)
+
 # ========== 基本路由 ==========
 @app.route("/")
 def index():
@@ -64,36 +77,54 @@ def topic(topic_id):
         9: "期末成果驗收"
     }
     title = topics.get(topic_id, "未知主題")
-    return render_template("topic.html", topic_id=topic_id, title=title)
 
-
-# ========== Week2 單獨頁面 ==========
-@app.route("/topic/2/intro")
-def week2_intro():
-    return render_template("week2.html", title="股票基礎入門")
-
-
-    # 🚩 Week6 改成直接跳 week6.html
     if topic_id == 6:
         return render_template("week6.html", title=title)
 
     return render_template("topic.html", topic_id=topic_id, title=title)
 
-# ========== 第九週心理測驗 ==========
+# ========== Week2 ==========
+@app.route("/topic/2/intro")
+def week2_intro():
+    return render_template("week2.html", title="股票基礎入門")
+
+# ========== Week3 ==========
+@app.route("/topic/3/intro")
+def week3_intro():
+    return render_template("week3.html", title="股票分析與策略")
+
+# ========== Hugging Face 問答 API ==========
+@app.route("/ask", methods=["POST"])
+def ask():
+    data = request.get_json()
+    query = data.get("query", "")
+
+    try:
+        result = generator(
+            query,
+            max_new_tokens=50,
+            do_sample=True,
+            top_k=50,
+            top_p=0.95
+        )
+        answer = result[0]["generated_text"]
+    except Exception as e:
+        answer = f"出錯了: {e}"
+
+    return jsonify({"answer": answer})
+
+# ========== Week9 心理測驗 ==========
 @app.route("/topic/9/test", methods=["GET", "POST"])
 def topic9_test():
     if request.method == "GET":
         return render_template("week9.html")
 
-    # ✅ 只取數字答案 (q1~q10)，避免 ValueError
     answers = {k: v for k, v in request.form.items() if k.startswith("q")}
     scores = [int(v) for v in answers.values()]
     score = sum(scores)
 
-    # ✅ 文字答案 (a1~a10) 用來顯示回顧
     review_answers = {k: v for k, v in request.form.items() if k.startswith("a")}
 
-    # 題目字典
     questions = {
         1: "🌩️ 暴風雨來襲！市場暴跌 20%，你會怎麼辦？",
         2: "🎯 這趟冒險，你的首要目標是？",
@@ -107,7 +138,6 @@ def topic9_test():
         10: "🔥 旅程最後，你能承受的最大損失是？"
     }
 
-    # 判斷角色與配置
     if score <= 15:
         result = ("🐢 保守型探險者", "偏向安全，適合定存、債券、保守型ETF", "你謹慎小心，重視資產安全。")
         allocation = {"定存/債券": 70, "ETF": 20, "股票": 10}
@@ -121,11 +151,13 @@ def topic9_test():
         result = ("🦅 冒險型探險者", "高風險資產為主", "你像老鷹一樣追求高空獵物，承擔巨大風險。")
         allocation = {"股票": 90, "ETF": 10}
 
-    return render_template("week9.html",
-                           result=result,
-                           allocation=allocation,
-                           review_answers=review_answers,
-                           questions=questions)
+    return render_template(
+        "week9.html",
+        result=result,
+        allocation=allocation,
+        review_answers=review_answers,
+        questions=questions
+    )
 
 # ========== 主程式 ==========
 if __name__ == "__main__":
